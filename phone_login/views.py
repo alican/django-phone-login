@@ -48,10 +48,10 @@ class ValidateOTP(CreateAPIView):
             data=request.data, context={'request': request}
         )
         if ser.is_valid():
-            pk = request.data.get("pk")
+            reference_id = request.data.get("reference_id")
             otp = request.data.get("otp")
             try:
-                user = authenticate(request, pk=pk, otp=otp)
+                user = authenticate(request, pk=reference_id, otp=otp)
                 if user:
                     last_login = user.last_login
                 login(request, user)

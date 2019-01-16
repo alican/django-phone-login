@@ -13,7 +13,7 @@ class PhoneTokenCreateSerializer(ModelSerializer):
 
     class Meta:
         model = PhoneToken
-        fields = ('pk', 'phone_number')
+        fields = ('reference_id', 'phone_number')
 
 
 class PhoneTokenUser(ModelSerializer):
@@ -24,9 +24,9 @@ class PhoneTokenUser(ModelSerializer):
 
 
 class PhoneTokenValidateSerializer(ModelSerializer):
-    pk = serializers.IntegerField()
     otp = serializers.CharField(max_length=40)
+    reference_id = serializers.CharField(max_length=12)
 
     class Meta:
         model = PhoneToken
-        fields = ('pk', 'otp')
+        fields = ('reference_id', 'otp')

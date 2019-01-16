@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import datetime
 import hashlib
 import os
-
+import uuid
 from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 from sendsms.message import SmsMessage
-
+from django.utils.crypto import get_random_string
 
 class PhoneNumberUserManager(BaseUserManager):
     use_in_migrations = True
@@ -64,8 +64,11 @@ class PhoneNumberAbstactUser(AbstractUser):
         verbose_name_plural = _('users')
         abstract = True
 
-
+def random_string():
+    return get_random_string(length=12)
+    
 class PhoneToken(models.Model):
+    reference_id = models.CharField(max_length=12, default=random_string, editable=False)
     phone_number = PhoneNumberField(editable=False)
     otp = models.CharField(max_length=40, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, editable=False)
@@ -94,7 +97,11 @@ class PhoneToken(models.Model):
             message = SmsMessage(
                 body=render_to_string(
                     "otp_sms.txt",
-                    {"otp": otp, "id": phone_token.id}
+                    {
+                        "otp": otp, 
+                        "id": phone_token.reference_id, 
+                        "sitename": getattr(settings, 'PHONE_LOGIN_SITENAME', "MyProjectName")
+                    }
                 ),
                 from_phone=from_phone,
                 to=[number]
