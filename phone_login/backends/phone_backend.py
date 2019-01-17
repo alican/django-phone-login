@@ -52,7 +52,6 @@ class PhoneBackend(ModelBackend):
         return user
 
     def authenticate(self, request, pk=None, otp=None, **extra_fields):
-        print("test")
         # 1. Validating the PhoneToken with PK and OTP.
         # 2. Check if phone_token and otp are same, within the given time range
         timestamp_difference = datetime.datetime.now() - datetime.timedelta(
@@ -67,18 +66,18 @@ class PhoneBackend(ModelBackend):
                 timestamp__gte=timestamp_difference
             )
         except PhoneToken.DoesNotExist:
-            print("notfound")
-            phone_token = PhoneToken.objects.get(reference_id=pk)
+            try:
+                phone_token = PhoneToken.objects.get(reference_id=pk)
+            except PhoneToken.DoesNotExist:
+                raise PhoneToken.DoesNotExist
             phone_token.attempts = phone_token.attempts + 1
             phone_token.save()
             raise PhoneToken.DoesNotExist
-        print(phone_token)
 
         # 3. Create new user if he doesn't exist. But, if he exists login.
         user = self.user_model.objects.filter(
             **self.get_phone_number_data(phone_token.phone_number)
         ).first()
-        print(user)
 
         if not user:
             user = self.create_user(
