@@ -21,12 +21,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='phonetoken',
             name='reference_id',
-            field=models.CharField(default=random_string, editable=False, max_length=12),
+            field=models.CharField(default=random_string, null=True, editable=False, max_length=12),
         ),
         migrations.RunPython(create_random_string),
         migrations.AlterField(
             model_name='phonetoken',
             name='reference_id',
-            field=models.CharField(unique=True)
+            field=models.CharField(unique=True, null=False)
         )
     ]
