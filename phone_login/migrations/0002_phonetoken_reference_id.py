@@ -8,6 +8,7 @@ def create_random_string(apps, schema_editor):
     Device = apps.get_model('phone_login', 'phonetoken')
     for token in PhoneToken.objects.all():
         token.reference_id = random_string()
+        print(token.reference_id)
         token.save(update_fields=['reference_id'])
 
 
@@ -21,12 +22,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='phonetoken',
             name='reference_id',
-            field=models.CharField(default=random_string, null=True, editable=False, max_length=12),
+            field=models.CharField(default="randomstring", null=True, editable=False, max_length=12),
         ),
         migrations.RunPython(create_random_string),
         migrations.AlterField(
             model_name='phonetoken',
             name='reference_id',
-            field=models.CharField(unique=True, null=False)
+            field=models.CharField(unique=True, null=False, max_length=12, editable=False)
         )
     ]
