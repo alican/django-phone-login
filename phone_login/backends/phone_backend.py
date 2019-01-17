@@ -72,7 +72,7 @@ class PhoneBackend(ModelBackend):
                 return None
             phone_token.attempts = phone_token.attempts + 1
             phone_token.save()
-            return None
+            raise PhoneToken.DoesNotExist
 
         # 3. Create new user if he doesn't exist. But, if he exists login.
         user = self.user_model.objects.filter(
